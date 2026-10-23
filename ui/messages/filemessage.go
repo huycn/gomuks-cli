@@ -33,6 +33,7 @@ import (
 	"maunium.net/go/gomuks/debug"
 	ifc "maunium.net/go/gomuks/interface"
 	"maunium.net/go/gomuks/lib/ansimage"
+	"maunium.net/go/gomuks/lib/sixel"
 	"maunium.net/go/gomuks/matrix/muksevt"
 	"maunium.net/go/gomuks/ui/messages/tstring"
 )
@@ -48,8 +49,9 @@ type FileMessage struct {
 
 	eventID id.EventID
 
-	imageData []byte
-	buffer    []tstring.TString
+	imageData  []byte
+	buffer     []tstring.TString
+	sixelImage *sixel.Image
 
 	matrix ifc.MatrixContainer
 }
@@ -140,7 +142,11 @@ func (msg *FileMessage) ThumbnailPath() string {
 	return msg.matrix.GetCachePath(msg.Thumbnail)
 }
 
+// maxSixelRows is the maximum height of images rendered with sixel in terminal rows.
+const maxSixelRows = 20
+
 func (msg *FileMessage) CalculateBuffer(prefs config.UserPreferences, width int, uiMsg *UIMessage) {
+	msg.sixelImage = nil
 	if width < 2 {
 		return
 	}
@@ -157,6 +163,19 @@ func (msg *FileMessage) CalculateBuffer(prefs config.UserPreferences, width int,
 			Append(": ").
 			AppendTString(urlTString)
 		msg.buffer = calculateBufferWithText(prefs, text, width, uiMsg)
+		return
+	}
+
+	if prefs.UseSixel() {
+		img, err := sixel.NewImageFromReader(bytes.NewReader(msg.imageData), width, maxSixelRows, sixel.Default.CellSize())
+		if err != nil {
+			msg.buffer = []tstring.TString{tstring.NewColorTString("Failed to display image", tcell.ColorRed)}
+			debug.Print("Failed to display image:", err)
+			return
+		}
+		msg.sixelImage = img
+		// Blank lines to reserve space for the image, which is drawn separately
+		msg.buffer = make([]tstring.TString, img.Rows)
 		return
 	}
 
@@ -184,6 +203,10 @@ func (msg *FileMessage) Height() int {
 }
 
 func (msg *FileMessage) Draw(screen mauview.Screen, _ *UIMessage) {
+	if msg.sixelImage != nil {
+		sixel.Default.Place(screen, msg.sixelImage)
+		return
+	}
 	for y, line := range msg.buffer {
 		line.Draw(screen, 0, y)
 	}

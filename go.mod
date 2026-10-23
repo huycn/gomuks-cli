@@ -21,6 +21,7 @@ require (
 	go.mau.fi/tcell v0.4.0
 	golang.org/x/image v0.18.0
 	golang.org/x/net v0.27.0
+	golang.org/x/sys v0.22.0
 	gopkg.in/toast.v1 v1.0.0-20180812000517-0a84660828b2
 	gopkg.in/vansante/go-ffprobe.v2 v2.2.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -41,7 +42,6 @@ require (
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
 	golang.org/x/crypto v0.25.0 // indirect
-	golang.org/x/sys v0.22.0 // indirect
 	golang.org/x/term v0.22.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
@@ -49,3 +49,5 @@ require (
 )
 
 replace github.com/mattn/go-runewidth => github.com/tulir/go-runewidth v0.0.14-0.20221113132156-dc2fc6d28246
+
+replace go.mau.fi/mauview => ./third_party/mauview

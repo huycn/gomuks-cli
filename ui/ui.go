@@ -26,6 +26,7 @@ import (
 	"go.mau.fi/tcell"
 
 	ifc "maunium.net/go/gomuks/interface"
+	"maunium.net/go/gomuks/lib/sixel"
 )
 
 type View string
@@ -70,6 +71,10 @@ func (ui *GomuksUI) Init() {
 	mauview.Backspace2RemovesWord = ui.gmx.Config().Backspace2RemovesWord
 	mauview.Backspace1RemovesWord = ui.gmx.Config().Backspace1RemovesWord
 	ui.app.SetAlwaysClear(ui.gmx.Config().AlwaysClearScreen)
+	sixel.Init()
+	if sixel.Default != nil {
+		ui.app.SetShowHandler(sixel.Default.Show)
+	}
 	clipboard.Initialize()
 	ui.views = map[View]mauview.Component{
 		ViewLogin: ui.NewLoginView(),

@@ -320,7 +320,8 @@ func (view *MessageView) recalculateBuffers() {
 	recalculateMessageBuffers := view.width() != view.prevWidth() ||
 		view.widestSender() != view.prevWidestSender() ||
 		view.prevPrefs.BareMessageView != prefs.BareMessageView ||
-		view.prevPrefs.DisableImages != prefs.DisableImages
+		view.prevPrefs.DisableImages != prefs.DisableImages ||
+		view.prevPrefs.ImageProtocol != prefs.ImageProtocol
 	view.messagesLock.RLock()
 	view.msgBufferLock.Lock()
 	if recalculateMessageBuffers || len(view.messages) != view.prevMsgCount {

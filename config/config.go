@@ -36,6 +36,7 @@ import (
 	"go.mau.fi/tcell"
 
 	"maunium.net/go/gomuks/debug"
+	"maunium.net/go/gomuks/lib/sixel"
 	"maunium.net/go/gomuks/matrix/rooms"
 )
 
@@ -62,6 +63,8 @@ type UserPreferences struct {
 	AltEnterToSend       bool `yaml:"alt_enter_to_send"`
 
 	InlineURLMode string `yaml:"inline_url_mode"`
+	// ImageProtocol is "sixel", "halfblock" or "auto" (the default, which uses sixel if the terminal seems to support it).
+	ImageProtocol string `yaml:"image_protocol"`
 }
 
 var InlineURLsProbablySupported bool
@@ -78,6 +81,10 @@ func init() {
 
 func (up *UserPreferences) EnableInlineURLs() bool {
 	return up.InlineURLMode == "enable" || (InlineURLsProbablySupported && up.InlineURLMode != "disable")
+}
+
+func (up *UserPreferences) UseSixel() bool {
+	return sixel.Default != nil && (up.ImageProtocol == "sixel" || (sixel.ProbablySupported && up.ImageProtocol != "halfblock"))
 }
 
 type Keybind struct {

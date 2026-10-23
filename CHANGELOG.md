@@ -1,3 +1,10 @@
+# Unreleased
+
+* Added support for rendering images with the sixel protocol. It is enabled
+  automatically on terminals that appear to support it, and can be controlled
+  with the `image_protocol` preference (`auto`, `sixel` or `halfblock`) or
+  `/toggle sixel`.
+
 # v0.3.1 (2024-07-16)
 
 * Bumped minimum Go version to 1.21.

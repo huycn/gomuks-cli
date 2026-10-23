@@ -46,6 +46,7 @@ import (
 
 	"maunium.net/go/gomuks/debug"
 	"maunium.net/go/gomuks/lib/filepicker"
+	"maunium.net/go/gomuks/lib/sixel"
 )
 
 func cmdMe(cmd *Command) {
@@ -983,6 +984,7 @@ var toggleMsg = map[string]ToggleMessage{
 	"unverified":    SimpleToggleMessage("sending messages to unverified devices"),
 	"showurls":      SimpleToggleMessage("show URLs in text format"),
 	"inlineurls":    InvertedToggleMessage("use fancy terminal features to render URLs inside text"),
+	"sixel":         InvertedToggleMessage("use the sixel protocol to render images"),
 	"newline":       NewlineKeybindMessage("should <alt+enter> make a new line or send the message"),
 }
 
@@ -1038,6 +1040,17 @@ func cmdToggle(cmd *Command) {
 			default:
 				cmd.Config.Preferences.InlineURLMode = "enable"
 				cmd.Reply("Force-enabled using fancy terminal features to render URLs inside text. Restart gomuks to apply changes.")
+			}
+			continue
+		case "sixel":
+			if cmd.Config.Preferences.UseSixel() {
+				cmd.Config.Preferences.ImageProtocol = "halfblock"
+				cmd.Reply("Force-disabled rendering images using sixel.")
+			} else if sixel.Default == nil {
+				cmd.Reply("Sixel images are not supported on this platform.")
+			} else {
+				cmd.Config.Preferences.ImageProtocol = "sixel"
+				cmd.Reply("Force-enabled rendering images using sixel.")
 			}
 			continue
 		case "newline":
